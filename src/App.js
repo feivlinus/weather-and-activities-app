@@ -9,6 +9,7 @@ import useLocalStorage from "use-local-storage";
 import "./App.css";
 
 function App() {
+  const isGoodWeather = false;
   const initialActivities = [];
   const [activities, setActivities] = useLocalStorage(
     "activities",
@@ -19,10 +20,14 @@ function App() {
     setActivities([...activities, { ...newData, id: uid() }]);
   }
 
+  const filteredActivities = activities.filter(
+    (activity) => activity.isForGoodWeather === isGoodWeather
+  );
+
   return (
     <>
       <h1>Weather & Activities App ☀️🌧️</h1>
-      <List activities={activities} />
+      <List activities={filteredActivities} isGoodWeather={isGoodWeather} />
       <Form onAddActivity={handleAddActivity}></Form>
     </>
   );
