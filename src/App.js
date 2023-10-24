@@ -14,7 +14,7 @@ function App() {
   /*
         Wetter-Status Wert
     */
-  const [weather, setWeather] = useState([]);
+  const [weather, setWeather] = useState({ temperature: "0" });
 
   /*
         Local Storage State - Ablage der Aktivitäten
