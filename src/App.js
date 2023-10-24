@@ -9,41 +9,80 @@ import useLocalStorage from "use-local-storage";
 import "./App.css";
 
 function App() {
-  const [weather, setWeather] = useState();
-  const initialActivities = [];
-  const [activities, setActivities] = useLocalStorage(
-    "activities",
-    initialActivities
-  );
+	const initialActivities = [];
 
-  useEffect(() => {
-    async function startFetching() {
-      const response = await fetch(
-        "https://example-apis.vercel.app/api/weather/europe"
-      );
-      const weatherData = await response.json();
+	/*
+        Wetter-Status Wert
+    */
+	const [weather, setWeather] = useState();
 
-      setWeather(weatherData.isGoodWeather);
-    }
+	/*
+        Local Storage State - Ablage der Aktivitäten
+    */
+	const [activities, setActivities] = useLocalStorage(
+		"activities",
+		initialActivities
+	);
 
-    startFetching();
-  }, []);
+	/*
+        Fetch bzw. Api Anfrage um den Wetter-Status (good OR bad) zu holen
+        und zu setzen (weather)
 
-  function handleAddActivity(newData) {
-    setActivities([...activities, { ...newData, id: uid() }]);
-  }
+        Mit Bonus Interval setzen (https://upmostly.com/tutorials/setinterval-in-react-components-using-hooks)
+    */
+	useEffect(() => {
+		const interval = setInterval(() => {
+			async function startFetching() {
+				const response = await fetch(
+					"https://example-apis.vercel.app/api/weather/europe"
+				);
+				const weatherData = await response.json();
 
-  const filteredActivities = activities.filter(
-    (activity) => activity.isForGoodWeather === weather
-  );
+				setWeather(weatherData.isGoodWeather);
+			}
 
-  return (
-    <>
-      <h1>Weather & Activities App ☀️🌧️</h1>
-      <List activities={filteredActivities} isGoodWeather={weather} />
-      <Form onAddActivity={handleAddActivity}></Form>
-    </>
-  );
+			startFetching();
+		}, 5000);
+		return () => clearInterval(interval);
+	}, []);
+
+	/*
+        Um neue Aktivitäten hinzuzufügen 
+        jeder neue Eintrag erhält eine uid und wird an die vorhandene "Liste"
+        "angehängt"
+     */
+	function handleAddActivity(newData) {
+		setActivities([...activities, { ...newData, id: uid() }]);
+	}
+
+	/*
+        Aktivitätslöschfunktion die an dem X Button ausgeführt wird bei einem Click
+    */
+	function handleDeleteActivity(activityId) {
+		const newActivities = activities.filter(
+			(activity) => activity.id !== activityId
+		);
+		setActivities(newActivities);
+	}
+
+	/*
+        Gefilterte Aktivitäten-Liste entsprechend des Wetter-Status (good, bad)
+    */
+	const filteredActivities = activities.filter(
+		(activity) => activity.isForGoodWeather === weather
+	);
+
+	return (
+		<>
+			<h1>Weather & Activities App ☀️🌧️</h1>
+			<List
+				activities={filteredActivities}
+				isGoodWeather={weather}
+				onDeleteActivity={handleDeleteActivity}
+			/>
+			<Form onAddActivity={handleAddActivity}></Form>
+		</>
+	);
 }
 
 export default App;
