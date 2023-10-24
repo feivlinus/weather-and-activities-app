@@ -14,7 +14,7 @@ function App() {
   /*
         Wetter-Status Wert
     */
-  const [weather, setWeather] = useState();
+  const [weather, setWeather] = useState([]);
 
   /*
         Local Storage State - Ablage der Aktivitäten
@@ -38,9 +38,12 @@ function App() {
         );
         const weatherData = await response.json();
 
-        setWeather(weatherData);
+        setWeather({
+          temperature: weatherData.temperature,
+          condition: weatherData.condition,
+          isGoodWeather: weatherData.isGoodWeather,
+        });
       }
-
       startFetching();
     }, 5000);
     return () => clearInterval(interval);
@@ -74,11 +77,15 @@ function App() {
 
   return (
     <>
-      <h1>Weather & Activities App ☀️🌧️</h1>
-
+      <h1>
+        <span className="weather--condition">{weather.condition}</span>
+        <span className="weather--temperature">
+          {weather.temperature + "°C"}
+        </span>
+      </h1>
       <List
         activities={filteredActivities}
-        weather={weather}
+        isGoodWeather={weather}
         onDeleteActivity={handleDeleteActivity}
       />
       <Form onAddActivity={handleAddActivity}></Form>

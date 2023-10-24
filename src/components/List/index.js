@@ -1,9 +1,8 @@
-export default function List({ activities, weather, onDeleteActivity }) {
-  console.log(weather);
+export default function List({ activities, isGoodWeather, onDeleteActivity }) {
   return (
     <>
       <h2>
-        {weather.isGoodWeather
+        {isGoodWeather
           ? "The weather is awesome! Go outside and: "
           : "Bad weather outside! Here's what you can do now: "}
       </h2>
